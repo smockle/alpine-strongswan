@@ -1,5 +1,8 @@
 # strongSwan VPN + Alpine Linux
 
+[![Build Status](https://travis-ci.com/smockle/alpine-strongswan.svg?branch=master)](https://travis-ci.com/smockle/alpine-strongswan)
+[![Docker Pulls](https://img.shields.io/docker/pulls/smockle/alpine-strongswan.svg?style=flat)](https://hub.docker.com/r/smockle/alpine-strongswan)
+
 This is a fork of [stanback/alpine-strongswan-vpn](https://github.com/stanback/alpine-strongswan-vpn), a repository containing a Dockerfile for generating an image with [strongSwan](https://www.strongswan.org/) and [Alpine Linux](https://alpinelinux.org/).
 
 This image can be used on the server or client in a variety of configurations.
