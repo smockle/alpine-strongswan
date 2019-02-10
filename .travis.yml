@@ -25,7 +25,6 @@ jobs:
       script:
         - docker run --rm --privileged multiarch/qemu-user-static:register --reset
         - docker build --build-arg ARCH="amd64" -t smockle/alpine-strongswan:amd64 -f Dockerfile .
-        - docker run --rm -it smockle/alpine-strongswan:amd64 sh -c /usr/local/bin/alpine-strongswan.test.sh
       after_success:
         - if [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ "$TRAVIS_REPO_SLUG" == "smockle/alpine-strongswan" ]; then echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin; fi
         - if [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ "$TRAVIS_REPO_SLUG" == "smockle/alpine-strongswan" ]; then docker push smockle/alpine-strongswan:amd64; fi
@@ -34,7 +33,6 @@ jobs:
       script:
         - docker run --rm --privileged multiarch/qemu-user-static:register --reset
         - docker build --build-arg ARCH="armhf" -t smockle/alpine-strongswan:arm -f Dockerfile .
-        - docker run --rm -it smockle/alpine-strongswan:arm sh -c /usr/local/bin/alpine-strongswan.test.sh
       after_success:
         - if [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ "$TRAVIS_REPO_SLUG" == "smockle/alpine-strongswan" ]; then echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin; fi
         - if [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ "$TRAVIS_REPO_SLUG" == "smockle/alpine-strongswan" ]; then docker push smockle/alpine-strongswan:arm; fi

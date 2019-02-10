@@ -1,6 +1,6 @@
-# StrongSwan VPN + Alpine Linux
+# strongSwan VPN + Alpine Linux
 
-This is a fork of [stanback/alpine-strongswan-vpn](https://github.com/stanback/alpine-strongswan-vpn), a repository containing a Dockerfile for generating an image with [StrongSwan](https://www.strongswan.org/) and [Alpine Linux](https://alpinelinux.org/).
+This is a fork of [stanback/alpine-strongswan-vpn](https://github.com/stanback/alpine-strongswan-vpn), a repository containing a Dockerfile for generating an image with [strongSwan](https://www.strongswan.org/) and [Alpine Linux](https://alpinelinux.org/).
 
 This image can be used on the server or client in a variety of configurations.
 
@@ -62,7 +62,7 @@ sudo iptables -A FORWARD -j ACCEPT
 
 You can append arguments like `start --nofork --debug` to get debug output. Run `--help` for list of arguments.
 
-There are various ways to check on StrongSwan, including tailing the Docker logging output (stdout/stderr), the `ipsec` command, and the `swanctl` command:
+There are various ways to check on strongSwan, including tailing the Docker logging output (stdout/stderr), the `ipsec` command, and the `swanctl` command:
 
 ```Bash
 docker logs -f --tail 100 strongswan
