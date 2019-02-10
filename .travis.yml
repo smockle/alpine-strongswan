@@ -1,0 +1,53 @@
+language: minimal
+notifications:
+  email:
+    on_success: change
+    on_failure: change
+env:
+  global:
+    - DOCKER_CLI_EXPERIMENTAL=enabled
+services:
+  - docker
+addons:
+  apt:
+    packages:
+      - docker-ce
+      - qemu-user-static
+stages:
+  - "Prepare"
+  - name: "Deploy"
+    if: branch = master AND repo = smockle/alpine-strongswan
+jobs:
+  include:
+    # PREPARE
+    - stage: "Prepare"
+      name: amd64
+      script:
+        - docker run --rm --privileged multiarch/qemu-user-static:register --reset
+        - docker build --build-arg ARCH="amd64" --build-arg ONTEST="ONTEST" -t smockle/alpine-strongswan:amd64 -f Dockerfile .
+        - docker run --rm -it smockle/alpine-strongswan:amd64 sh -c /usr/local/bin/alpine-strongswan.test.sh
+      after_success:
+        - if [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ "$TRAVIS_REPO_SLUG" == "smockle/alpine-strongswan" ]; then echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin; fi
+        - if [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ "$TRAVIS_REPO_SLUG" == "smockle/alpine-strongswan" ]; then docker push smockle/alpine-strongswan:amd64; fi
+    - #
+      name: arm
+      script:
+        - docker run --rm --privileged multiarch/qemu-user-static:register --reset
+        - docker build --build-arg ARCH="armhf" --build-arg ONTEST="ONTEST" -t smockle/alpine-strongswan:arm -f Dockerfile .
+        - docker run --rm -it smockle/alpine-strongswan:arm sh -c /usr/local/bin/alpine-strongswan.test.sh
+      after_success:
+        - if [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ "$TRAVIS_REPO_SLUG" == "smockle/alpine-strongswan" ]; then echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin; fi
+        - if [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ "$TRAVIS_REPO_SLUG" == "smockle/alpine-strongswan" ]; then docker push smockle/alpine-strongswan:arm; fi
+    # DEPLOY
+    - stage: "Deploy"
+      name: latest
+      script: skip
+      before_deploy: docker image ls && echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+      deploy:
+        - provider: script
+          skip_cleanup: true
+          script: docker manifest create smockle/alpine-strongswan:latest smockle/alpine-strongswan:amd64 smockle/alpine-strongswan:arm && docker manifest annotate smockle/alpine-strongswan:latest smockle/alpine-strongswan:amd64 --os linux --arch amd64 && docker manifest annotate smockle/alpine-strongswan:latest smockle/alpine-strongswan:arm --os linux --arch arm && docker manifest push --purge smockle/alpine-strongswan:latest
+          on:
+            branch: master
+            repo: smockle/alpine-strongswan
+            tags: false
