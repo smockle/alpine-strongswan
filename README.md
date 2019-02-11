@@ -122,7 +122,7 @@ Crypto: IKEv2 AES256-SHA256-MODP2048
 
 6. In the “Add Configuration” pane, select “Type”: “IKEv2”. Set “Description”, then set “Server” and “Remote ID” to the `$SERVER_CN` and “Local ID” to the `$USER_CN`.
 
-7. Set “User Authentication” to “Certificate”, then select the “Certificate” installed in step 1.
+7. Set “User Authentication” to “Certificate”, then select the “Certificate” installed in step 3.
 
 # Additional Resources
 
