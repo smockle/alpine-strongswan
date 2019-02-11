@@ -7,7 +7,7 @@ This is a fork of [stanback/alpine-strongswan-vpn](https://github.com/stanback/a
 
 This image can be used on the server or client in a variety of configurations.
 
-The reference configuration in this repository and following guidelines are intended to provide an attempt at a best-practice example for setting up a universal VPN server that with PEAP-EAP-TLS clients over IPv4 & IPv6.
+The reference configuration in this repository and following guidelines are intended to provide an attempt at a best-practice example for setting up a universal VPN server with PEAP-EAP-TLS clients.
 
 # Setup
 
@@ -92,13 +92,37 @@ docker exec -it $(docker ps -q) sh
 
 Crypto: IKEv2 AES256-SHA256-MODP2048
 
-On macOS, you'll need to import and trust the CA certificate (`config/ipsec.d/cacerts/caCert.pem`), the user certificate (`config/ipsec.d/certs/userCert.pem`), and the exported .p12 file (`config/ipsec.d/userCert.p12`). When asked to specify authentication type, select “Certificate”.
+1. Double-click the CA certificate (`config/ipsec.d/cacerts/caCert.pem`) to import it into the keychain.
+
+2. In the Keychain Access app, find the imported certificate, right-click it and select “Get Info”, then select “Trust”: “Always Trust” in the info dialog.
+
+3. Double-click the p12 file (`config/ipsec.d/userCert.p12`) to import it into the keychain. When prompted, enter the password for the p12 file (use `docker logs strongswan` to find it).
+
+4. Open System Preferences and click “Network” > “+”. Select “Interface”: “VPN” and “VPN Type”: “IKEv2” and click “Create”.
+
+5. Select the new interface from the list and set the “Server Address” and “Remote ID” to the `$SERVER_CN` in the running container, then set “Local ID” to the `$USER_CN`.
+
+6. Click “Authentication Settings…”, set “Authentication Settings” to “Certificate” and click “Select…” to specify the user certificate to use. Select the certificate named `$USER_CN` and signed by `$CA_CN`, then click “Ok”.
+
+7. Click “Apply”, then “Connect” to save and test the connection.
 
 ## iOS 12
 
 Crypto: IKEv2 AES256-SHA256-MODP2048
 
-To setup, go to Settings -> General -> VPN. Add a new VPN configuration with type "IKEv2". Enter a description, server, remote ID, and local ID. Local ID should typically be your username. For authentication, “Certificate”.
+1. Send the CA certificate (`config/ipsec.d/cacerts/caCert.pem`) to the iOS device.
+
+2. In the Settings app, tap “General”, then “Profiles & Device Management”, then the newly-added CA certificate, then “Install”. Input your passcode, then tap “Install” again, then tap “Done”.
+
+3. Send the p12 file (`config/ipsec.d/userCert.p12`) to the iOS device.
+
+4. In the Settings app, tap “General”, then “Profiles & Device Management”, then the newly-added CA certificate, then “Install”. Input your passcode, then tap “Install” again. When prompted, enter the password for the p12 file (use `docker logs strongswan` to find it), then tap “Done”.
+
+5. In the Settings app, tap “General”, then “VPN”, then “Add VPN Configuration…”.
+
+6. In the “Add Configuration” pane, select “Type”: “IKEv2”. Set “Description”, then set “Server” and “Remote ID” to the `$SERVER_CN` and “Local ID” to the `$USER_CN`.
+
+7. Set “User Authentication” to “Certificate”, then select the “Certificate” installed in step 1.
 
 # Additional Resources
 
@@ -106,3 +130,4 @@ To setup, go to Settings -> General -> VPN. Add a new VPN configuration with typ
 - http://thomas.irmscher.bayern/crypto/VPN-with-Pi-StrongSwan-IKEv2-and-EAP-MSCHAPv2-for-Windows-Phone-8.1.html
 - https://www.zeitgeist.se/2013/11/22/strongswan-howto-create-your-own-vpn/
 - https://blog.arrogantrabbit.com/vpn/IKEv2-VPN-setup-on-Apline-Linux/
+- https://gist.github.com/karlvr/34f46e1723a2118bb16190c22dbed1cc
