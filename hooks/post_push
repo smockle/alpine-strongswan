@@ -1,0 +1,15 @@
+#!/bin/bash
+docker manifest create \
+  smockle/alpine-strongswan:latest \
+  smockle/alpine-strongswan:amd64 \
+  smockle/alpine-strongswan:arm
+
+docker manifest annotate \
+  smockle/alpine-strongswan:latest \
+  smockle/alpine-strongswan:arm --os linux --arch arm
+
+docker manifest annotate \
+  smockle/alpine-strongswan:latest \
+  smockle/alpine-strongswan:amd64 --os linux --arch amd64
+
+docker manifest push --purge smockle/alpine-strongswan:latest

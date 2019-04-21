@@ -1,0 +1,11 @@
+#!/bin/bash
+docker build \
+  --build-arg ARCH="armhf" \
+  -t smockle/alpine-strongswan:arm \
+  -f $DOCKERFILE_PATH .
+
+docker build \
+  --build-arg ARCH="amd64" \
+  -t smockle/alpine-strongswan:amd64 \
+  -t smockle/alpine-strongswan:$DOCKER_TAG \
+  -f $DOCKERFILE_PATH .
